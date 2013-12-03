@@ -2,7 +2,7 @@
  * External dependencies.
  */
 
-var Formatter = require('hydro').Formatter;
+var Formatter = require('hydro-formatter');
 
 /**
  * List formatter.
@@ -13,27 +13,33 @@ var Formatter = require('hydro').Formatter;
 var List = Formatter.extend();
 
 /**
- * Setup.
- *
- * @api private
- */
-
-List.prototype.setup = function() {
-  this.len = 0;
-  this.currentFile = null;
-};
-
-/**
  * Before all tests.
  *
  * @param {Array} tests
  * @api public
  */
 
-List.prototype.beforeAll = function(tests) {
-  tests.forEach(function(test) {
-    this.len = Math.max(test.title.length, this.len);
-  }, this);
+List.prototype.beforeAll = function(suites) {
+  var len = 0;
+
+  suites.forEach(function(suite) {
+    suite.tests.forEach(function(test) {
+      len = Math.max(test.title.length, len);
+    });
+  });
+
+  this.len = len;
+};
+
+/**
+ * Before suite.
+ *
+ * @api public
+ */
+
+List.prototype.beforeSuite = function(suite) {
+  this.println();
+  this.println(this.color('gray', suite.title));
 };
 
 /**
@@ -44,7 +50,6 @@ List.prototype.beforeAll = function(tests) {
  */
 
 List.prototype.beforeTest = function(test) {
-  if (this.currentFile !== test.file) this.displayGroup(test.file);
   var padding = Array(this.len + 1 - test.title.length).join(' ');
   this.print(this.padding + test.title + padding);
 };
