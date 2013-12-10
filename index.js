@@ -19,14 +19,16 @@ var List = Formatter.extend();
  * @api public
  */
 
-List.prototype.beforeAll = function(suites) {
+List.prototype.beforeAll = function(runner) {
   var len = 0;
 
-  suites.forEach(function(suite) {
-    suite.tests.forEach(function(test) {
+  (function traverse(suite) {
+    var tests = suite.tests || [];
+    tests.forEach(function(test) {
       len = Math.max(test.title.length, len);
     });
-  });
+    (suite.suites || []).forEach(traverse);
+  })(runner);
 
   this.len = len;
 };
@@ -38,8 +40,21 @@ List.prototype.beforeAll = function(suites) {
  */
 
 List.prototype.beforeSuite = function(suite) {
+  var parents = [];
+  var parent = suite.parent;
+  var title = null;
+
+  while (parent) {
+    parents.push(parent.title);
+    parent = parent.parent;
+  }
+
+  title = parents.length
+    ? parents.reverse().join(' ') + ' ' + suite.title
+    : suite.title;
+
   this.println();
-  this.println(this.color('gray', suite.title));
+  this.println(this.color(title, 'gray'));
 };
 
 /**
@@ -62,10 +77,10 @@ List.prototype.beforeTest = function(test) {
  */
 
 List.prototype.afterTest = function(test) {
-  var time = this.color('gray', this.ms(test.time));
+  var time = this.color(this.ms(test.time), 'gray');
   var status = test.failed ?
-    this.color('red', 'ERROR') :
-    this.color('green', 'OK');
+    this.color('ERROR', 'red') :
+    this.color('OK', 'green');
 
   this.print(' ' + status + ' ' + time + '\n');
 };
@@ -78,8 +93,8 @@ List.prototype.afterTest = function(test) {
  */
 
 List.prototype.afterAll = function(result) {
-  this.displayResult(result);
-  this.displayFailed(result);
+  this.displayResult();
+  this.displayFailed();
 };
 
 /**
