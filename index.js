@@ -45,7 +45,7 @@ List.prototype.beforeSuite = function(suite) {
   var title = null;
 
   while (parent) {
-    parents.push(parent.title);
+    if (parent.title) parents.push(parent.title);
     parent = parent.parent;
   }
 
@@ -78,11 +78,14 @@ List.prototype.beforeTest = function(test) {
 
 List.prototype.afterTest = function(test) {
   var time = this.color(this.ms(test.time), 'gray');
-  var status = test.failed ?
-    this.color('ERROR', 'red') :
-    this.color('OK', 'green');
+  var msgs = {
+    failed: 'ERROR',
+    passed: 'OK',
+    skipped: 'SKIPPED',
+    pending: 'PENDING',
+  };
 
-  this.print(' ' + status + ' ' + time + '\n');
+  this.print(' ' + this.color(msgs[test.status], this.statusColor[test.status]) + ' ' + time + '\n');
 };
 
 /**
