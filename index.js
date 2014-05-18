@@ -92,7 +92,7 @@ List.prototype.afterTest = function(test) {
  * @api public
  */
 
-List.prototype.afterAll = function(result) {
+List.prototype.afterAll = function() {
   this.displayResult();
   this.displayFailed();
 };
