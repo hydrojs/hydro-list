@@ -20,14 +20,10 @@ var List = Formatter.extend();
  */
 
 List.prototype.beforeAll = function(suite) {
-  var len = 0;
-
-  suite.runnables.forEach(function traverse(test) {
-    if (test.runnables) test.runnables.forEach(traverse);
-    else len = Math.max(test.title.length, len);
-  });
-
-  this.len = len;
+  this.len = suite.runnables.reduce(function traverse(len, test) {
+    if (test.runnables) return test.runnables.reduce(traverse, len);
+    return Math.max(test.title.length, len);
+  }, 0);
 };
 
 /**
