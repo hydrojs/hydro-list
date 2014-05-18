@@ -11,6 +11,10 @@
   "peerDependencies": {
     "hydro": "0.x"
   },
+  "devDependencies": {
+    "hydro": "*",
+    "hydro-bdd": "*"
+  },
   "dependencies": {
     "hydro-formatter": "*"
   },
