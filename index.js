@@ -19,16 +19,13 @@ var List = Formatter.extend();
  * @api public
  */
 
-List.prototype.beforeAll = function(runner) {
+List.prototype.beforeAll = function(suite) {
   var len = 0;
 
-  (function traverse(suite) {
-    var tests = suite.tests || [];
-    tests.forEach(function(test) {
-      len = Math.max(test.title.length, len);
-    });
-    (suite.suites || []).forEach(traverse);
-  })(runner);
+  suite.runnables.forEach(function traverse(test) {
+    if (test.runnables) test.runnables.forEach(traverse);
+    else len = Math.max(test.title.length, len);
+  });
 
   this.len = len;
 };
